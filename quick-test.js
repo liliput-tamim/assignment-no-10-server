@@ -29,13 +29,13 @@ async function testRequestFlow() {
     console.log('✅ Connections found:', connections.data.length);
     
     if (connections.data.length > 0) {
-      console.log('🎉 SUCCESS: Request appears in My Connections!');
+      console.log(' SUCCESS: Request appears in My Connections!');
     } else {
-      console.log('❌ ISSUE: Request not found in My Connections');
+      console.log(' ISSUE: Request not found in My Connections');
     }
     
   } catch (error) {
-    console.error('❌ Error:', error.response?.data || error.message);
+    console.error(' Error:', error.response?.data || error.message);
   }
 }
 
