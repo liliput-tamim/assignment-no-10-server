@@ -120,12 +120,12 @@ app.get('/partners/:id', async (req, res) => {
   }
 });
 
-// Create new partner profile
-app.post('/partners', verifyToken, async (req, res) => {
+// Create new partner profile (no auth required for development)
+app.post('/partners', async (req, res) => {
   try {
     const partnerData = {
       ...req.body,
-      createdBy: req.user.email,
+      createdBy: req.body.email || 'anonymous@example.com',
       createdAt: new Date(),
       partnerCount: 0,
       rating: 0
