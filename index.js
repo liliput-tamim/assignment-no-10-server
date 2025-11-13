@@ -86,7 +86,8 @@ app.post('/partners', async (req, res) => {
       createdBy: req.body.email || 'anonymous@example.com',
       createdAt: new Date(),
       partnerCount: 0,
-      rating: 0
+      patnerCount: 0,
+      rating: 4.5
     };
     
     const result = await db.collection('partners').insertOne(partnerData);
@@ -123,6 +124,7 @@ app.delete('/partners/:id', async (req, res) => {
 app.post('/requests', async (req, res) => {
   try {
     const { partnerId, message, senderEmail, senderName } = req.body;
+    console.log('📝 Creating request:', { partnerId, senderEmail, senderName });
     
     // Check for duplicate request
     const existingRequest = await db.collection('requests').findOne({
@@ -131,6 +133,7 @@ app.post('/requests', async (req, res) => {
     });
     
     if (existingRequest) {
+      console.log('⚠️ Duplicate request found');
       return res.status(400).json({ error: 'Request already sent to this partner' });
     }
     
@@ -144,15 +147,35 @@ app.post('/requests', async (req, res) => {
     };
     
     const result = await db.collection('requests').insertOne(requestData);
+    console.log('✅ Request created with ID:', result.insertedId);
     
-    // Increment partner count
-    await db.collection('partners').updateOne(
-      { _id: new ObjectId(partnerId) },
-      { $inc: { partnerCount: 1 } }
-    );
+    // Increment partner count (both fields for compatibility)
+    try {
+      const updateResult = await db.collection('partners').updateOne(
+        { _id: new ObjectId(partnerId) },
+        { $inc: { partnerCount: 1, patnerCount: 1 } }
+      );
+      console.log('📈 Partner count updated:', updateResult.modifiedCount);
+    } catch (countError) {
+      console.error('❌ Failed to update partner count:', countError);
+    }
     
     res.status(201).json({ _id: result.insertedId, ...requestData });
   } catch (error) {
+    console.error('❌ Error creating request:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Debug endpoint to get all requests
+app.get('/requests/all', async (req, res) => {
+  try {
+    console.log('🔍 Fetching all requests for debugging...');
+    const requests = await db.collection('requests').find({}).toArray();
+    console.log(`📊 Found ${requests.length} total requests in database`);
+    res.json(requests);
+  } catch (error) {
+    console.error('❌ Error fetching all requests:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -160,19 +183,31 @@ app.post('/requests', async (req, res) => {
 // Get requests by user email
 app.get('/requests/:email', async (req, res) => {
   try {
+    console.log('🔍 Fetching requests for email:', req.params.email);
+    
     const requests = await db.collection('requests')
       .find({ senderEmail: req.params.email })
       .sort({ createdAt: -1 })
       .toArray();
     
+    console.log(`📊 Found ${requests.length} requests for ${req.params.email}`);
+    
     // Populate partner details
     for (let request of requests) {
-      const partner = await db.collection('partners').findOne({ _id: new ObjectId(request.partnerId) });
-      request.partnerDetails = partner;
+      try {
+        const partner = await db.collection('partners').findOne({ _id: new ObjectId(request.partnerId) });
+        request.partnerDetails = partner;
+        console.log(`🔗 Populated partner details for request ${request._id}`);
+      } catch (partnerError) {
+        console.error(`❌ Failed to populate partner for request ${request._id}:`, partnerError);
+        request.partnerDetails = null;
+      }
     }
     
+    console.log('✅ Sending response with populated requests');
     res.json(requests);
   } catch (error) {
+    console.error('❌ Error fetching requests:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -197,11 +232,11 @@ app.delete('/requests/:id', async (req, res) => {
     
     await db.collection('requests').deleteOne({ _id: new ObjectId(req.params.id) });
     
-    // Decrement partner count
+    // Decrement partner count (both fields for compatibility)
     if (request) {
       await db.collection('partners').updateOne(
         { _id: new ObjectId(request.partnerId) },
-        { $inc: { partnerCount: -1 } }
+        { $inc: { partnerCount: -1, patnerCount: -1 } }
       );
     }
     
