@@ -3,3 +3,4 @@ node_modules
 firebase-config.json
 *.log
 .DS_Store
+firebase-config.example.json
