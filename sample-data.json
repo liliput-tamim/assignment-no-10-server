@@ -1,0 +1,55 @@
+{
+  "partners": [
+    {
+      "name": "John Doe",
+      "subject": "Mathematics",
+      "experienceLevel": "Expert",
+      "rating": 4.8,
+      "partnerCount": 15,
+      "description": "Experienced math tutor with 5+ years of teaching experience",
+      "availability": "Weekdays 6-9 PM",
+      "createdBy": "john@example.com",
+      "createdAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "name": "Jane Smith",
+      "subject": "Physics",
+      "experienceLevel": "Intermediate",
+      "rating": 4.5,
+      "partnerCount": 8,
+      "description": "Physics student helping others with problem-solving",
+      "availability": "Weekends",
+      "createdBy": "jane@example.com",
+      "createdAt": "2024-01-16T14:30:00Z"
+    },
+    {
+      "name": "Mike Johnson",
+      "subject": "Computer Science",
+      "experienceLevel": "Expert",
+      "rating": 4.9,
+      "partnerCount": 22,
+      "description": "Software engineer teaching programming and algorithms",
+      "availability": "Flexible",
+      "createdBy": "mike@example.com",
+      "createdAt": "2024-01-17T09:15:00Z"
+    }
+  ],
+  "requests": [
+    {
+      "senderEmail": "student@example.com",
+      "senderName": "Student User",
+      "partnerId": "partner_id_here",
+      "message": "Hi, I need help with calculus. Are you available this week?",
+      "status": "pending",
+      "createdAt": "2024-01-18T16:45:00Z"
+    }
+  ],
+  "users": [
+    {
+      "email": "john@example.com",
+      "name": "John Doe",
+      "photoURL": "https://example.com/photo.jpg",
+      "createdAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
